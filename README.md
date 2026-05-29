@@ -1,5 +1,7 @@
 # Deadlinez
 
+![hippo](https://media2.giphy.com/media/v1.Y2lkPTZjMDliOTUyemNybWk1dGQ0bGl3ajRud2QxOTZrdDZvYjhmemd5amV5NXQxY3NqbCZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/IiBlJr6FZTtvi/giphy.gif)
+
 A small uni project for the "Programming for the Internet" course — a
 minimalistic, glorified TODO app for keeping track of university deadlines.
 Stay organized folks!
