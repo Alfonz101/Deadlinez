@@ -355,7 +355,7 @@ requirement.
 
 ---
 
-## 8. Security notes (worth knowing for the defense)
+## 8. Security notes
 
 Small project, but it does the three things that matter:
 
