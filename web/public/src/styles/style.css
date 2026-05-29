@@ -1,0 +1,497 @@
+@import url('https://fonts.googleapis.com/css2?family=Hanken+Grotesk:wght@400;500;600;700&display=swap');
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+/* ── Design tokens ─────────────────────────────── */
+:root {
+    /* Neutral ground — desaturated ink/slate, no purple tint.
+       Chrome is grayscale so saturated color is free to signal. */
+    --bg:          #14161A;
+    --surface:     #1C1F25;
+    --surface-2:   #23272E;
+    --border:      #2E323B;
+
+    --text:        #E6E8EC;
+    --text-muted:  #8A909B;
+
+    /* Primary action = bright neutral. Pops via contrast, not hue, so the
+       only color in the chrome is reserved for signals (DESIGN.md §6). */
+    --accent:      #EDEEF2;   /* near-white, for CTA / focus ring / links */
+    --accent-ink:  #14161A;   /* text on accent */
+
+    /* Signal colors — hand-tuned, never pure red/green/orange.
+       Shared by due-date urgency AND priority border (separate channels). */
+    --danger:      #E5687A;   /* coral  — overdue / high / delete */
+    --warn:        #E0A050;   /* amber  — due soon / medium       */
+    --safe:        #7FB08A;   /* sage   — comfortable / low / done */
+
+    /* System tokens */
+    --radius:      10px;
+    --radius-pill: 999px;
+
+    --shadow-sm:   0 1px 2px rgba(0,0,0,.35);
+    --shadow-md:   0 2px 4px rgba(0,0,0,.30), 0 8px 24px -6px rgba(0,0,0,.50);
+    --ring:        0 0 0 2px var(--bg), 0 0 0 4px var(--accent);
+
+    --t-fast:      150ms ease;
+    --t-enter:     280ms ease-out;
+}
+
+/* ── Base ──────────────────────────────────────── */
+body {
+    font-family: 'Hanken Grotesk', system-ui, sans-serif;
+    color: var(--text);
+    line-height: 1.5;
+    min-height: 100vh;
+    /* Tasteful neutral gradient: a soft top glow layered over a vertical tonal
+       wash (lighter ink up top, deeper ink at the base). All grayscale — no hue,
+       so signal colors keep their pop. */
+    background-color: var(--bg);
+    background-image:
+        radial-gradient(120% 70% at 50% -10%, rgba(255,255,255,.045), transparent 55%),
+        linear-gradient(180deg, #181B21 0%, #14161A 45%, #101217 100%);
+    background-attachment: fixed;
+    background-repeat: no-repeat;
+}
+
+a { color: var(--accent); text-decoration: none; }
+a:hover { text-decoration: underline; }
+
+/* ── Navigation ────────────────────────────────── */
+nav {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 1rem 2rem;
+}
+
+.nav-logo {
+    position: relative;
+    display: inline-block;
+    font-weight: 700;
+    font-size: 1.5rem;
+    letter-spacing: -0.03em;
+    color: var(--text);
+    transition: color var(--t-fast);
+}
+
+/* The trailing "z" carries the single brand pop — coral ties the name to the
+   app's whole reason for being: deadlines. */
+.nav-logo .z { color: var(--danger); }
+
+/* Coral underline draws in on hover (left→right). transform only. */
+.nav-logo::after {
+    content: "";
+    position: absolute;
+    left: 0;
+    bottom: -2px;
+    width: 100%;
+    height: 2px;
+    background: var(--danger);
+    border-radius: 2px;
+    transform: scaleX(0);
+    transform-origin: left;
+    transition: transform var(--t-fast);
+}
+.nav-logo:hover { text-decoration: none; }
+.nav-logo:hover::after { transform: scaleX(1); }
+.nav-logo:focus-visible { outline: none; box-shadow: var(--ring); border-radius: 4px; }
+
+.nav-links {
+    display: flex;
+    align-items: center;
+    gap: 0.25rem;
+}
+
+.nav-links a {
+    color: var(--text-muted);
+    padding: 0.35rem 0.9rem;
+    border-radius: var(--radius-pill);
+    font-size: 0.9rem;
+    font-weight: 500;
+    transition: color var(--t-fast), background var(--t-fast);
+}
+
+.nav-links a:hover { color: var(--text); text-decoration: none; }
+.nav-links a:focus-visible { outline: none; box-shadow: var(--ring); }
+
+/* Active nav item = quiet neutral pill ("you are here"). Deliberately softer
+   than the bright CTA so the two filled pills don't compete (DESIGN.md §1). */
+.nav-links a.active {
+    background: var(--surface-2);
+    color: var(--text);
+    box-shadow: inset 0 0 0 1px var(--border);
+}
+
+/* ── Page layout ───────────────────────────────── */
+main {
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 2.5rem 1.5rem;
+}
+
+h1 {
+    font-size: 2rem;
+    font-weight: 700;
+    line-height: 1.15;
+    margin-bottom: 0.25rem;
+}
+
+.page-subtitle {
+    color: var(--text-muted);
+    font-size: 0.95rem;
+    margin-bottom: 2rem;
+    margin-top: 0.75rem;
+}
+
+/* ── Quote banner (dashboard) ──────────────────── */
+.quote-banner {
+    position: relative;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    box-shadow: var(--shadow-sm), inset 0 1px 0 rgba(255,255,255,.04);
+    padding: 1.1rem 1.25rem 1.1rem 3rem;
+    margin-bottom: 1.5rem;
+    animation: card-in var(--t-enter) both;
+}
+
+/* Oversized decorative opening quote in the one accent color */
+.quote-banner::before {
+    content: "\201C";
+    position: absolute;
+    left: 0.75rem;
+    top: 0.2rem;
+    font-size: 2.5rem;
+    line-height: 1;
+    font-weight: 700;
+    color: var(--danger);
+}
+
+.quote-banner blockquote { font-size: 1rem; font-weight: 500; color: var(--text); }
+.quote-banner figcaption { margin-top: 0.35rem; font-size: 0.85rem; color: var(--text-muted); }
+
+/* ── Filter chips ──────────────────────────────── */
+.filters {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem 1.5rem;          /* tight within a group, wide between groups */
+    margin-bottom: 1.5rem;
+}
+
+.filter-group {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.35rem;
+}
+
+.chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    font-family: inherit;
+    font-size: 0.8rem;
+    font-weight: 500;
+    color: var(--text-muted);
+    background: var(--surface-2);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-pill);
+    padding: 0.3rem 0.75rem;
+    cursor: pointer;
+    transition: color var(--t-fast), background var(--t-fast),
+                border-color var(--t-fast), transform var(--t-fast);
+}
+
+.chip:hover         { color: var(--text); }
+.chip:active        { transform: translateY(1px); }
+.chip:focus-visible { outline: none; box-shadow: var(--ring); }
+
+/* Selected chip = bright neutral fill, same language as the primary CTA */
+.chip.is-active {
+    color: var(--accent-ink);
+    background: var(--accent);
+    border-color: var(--accent);
+}
+
+/* Priority dots reuse the signal colors */
+.chip .dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
+.dot-high   { background: var(--danger); }
+.dot-medium { background: var(--warn); }
+.dot-low    { background: var(--safe); }
+
+.no-match {
+    color: var(--text-muted);
+    font-size: 0.95rem;
+    padding: 1rem 0;
+}
+
+/* ── Task card ─────────────────────────────────── */
+.task-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-left: 4px solid var(--warn); /* default, overridden below */
+    border-radius: var(--radius);
+    padding: 1rem 1.125rem;
+    margin-bottom: 0.75rem;
+    box-shadow: var(--shadow-sm), inset 0 1px 0 rgba(255,255,255,.04);
+    transition: transform var(--t-fast), box-shadow var(--t-fast);
+    animation: card-in var(--t-enter) both;
+}
+
+/* Lift on hover — transform/shadow only, no layout animation */
+.task-card:hover {
+    transform: translateY(-1px);
+    box-shadow: var(--shadow-md), inset 0 1px 0 rgba(255,255,255,.05);
+}
+
+@keyframes card-in {
+    from { opacity: 0; transform: translateY(6px); }
+    to   { opacity: 1; transform: translateY(0); }
+}
+
+/* Left border color = priority (color-only channel, distinct from due chip) */
+.task-card.priority-low    { border-left-color: var(--safe); }
+.task-card.priority-medium { border-left-color: var(--warn); }
+.task-card.priority-high   { border-left-color: var(--danger); }
+
+/* Completed tasks read "resolved", not broken: calm sage edge + dimmed text */
+.task-card.task-done {
+    border-left-color: var(--safe);
+    background: var(--bg);
+}
+.task-card.task-done .task-title,
+.task-card.task-done .task-desc,
+.task-card.task-done .due { opacity: 0.5; }
+.task-card.task-done:hover { transform: none; }
+
+/* Top row: title + tag on the left, due chip on the right */
+.task-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 0.75rem;
+}
+
+.task-left {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+}
+
+.task-title { font-size: 1rem; font-weight: 600; }
+
+/* Small quiet pill showing the course — metadata, not a signal */
+.task-tag {
+    font-size: 0.7rem;
+    font-weight: 500;
+    background: var(--surface-2);
+    color: var(--text-muted);
+    border: 1px solid var(--border);
+    padding: 0.1rem 0.55rem;
+    border-radius: var(--radius-pill);
+}
+
+/* ── Due date chip — urgency-graded, the headline signal ── */
+.due {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 0.8rem;
+    font-weight: 600;
+    white-space: nowrap;
+    flex-shrink: 0;
+    padding: 3px 10px;
+    border-radius: var(--radius-pill);
+    line-height: 1.4;
+}
+
+.due svg { width: 14px; height: 14px; }
+
+.due-overdue {
+    color: var(--danger);
+    background: color-mix(in srgb, var(--danger) 14%, transparent);
+}
+.due-soon {
+    color: var(--warn);
+    background: color-mix(in srgb, var(--warn) 14%, transparent);
+}
+/* Comfortable deadlines stay quiet — only real urgency lights up */
+.due-later {
+    color: var(--text-muted);
+    background: var(--surface-2);
+}
+
+.task-desc {
+    color: var(--text-muted);
+    font-size: 0.9rem;
+    margin: 0.4rem 0 0.5rem;
+}
+
+/* ── Task action icon buttons ──────────────────── */
+.task-actions {
+    display: flex;
+    gap: 0.5rem;
+    margin-top: 0.75rem;
+}
+
+.task-actions form { margin: 0; }
+
+.btn-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 2rem;
+    height: 2rem;
+    border-radius: 50%;
+    border: 1px solid var(--border);
+    background: var(--surface-2);
+    color: var(--text-muted);
+    box-shadow: var(--shadow-sm);
+    cursor: pointer;
+    transition: background var(--t-fast), color var(--t-fast),
+                border-color var(--t-fast), transform var(--t-fast);
+}
+
+.btn-icon svg { width: 0.875rem; height: 0.875rem; }
+
+.btn-icon:hover            { background: var(--border);   color: var(--text); }
+.btn-icon:active           { transform: translateY(1px); }
+.btn-icon:focus-visible    { outline: none; box-shadow: var(--ring); }
+.btn-icon.btn-done:hover   { background: var(--safe);   color: var(--accent-ink); border-color: var(--safe); }
+.btn-icon.btn-reopen:hover { background: var(--accent); color: var(--accent-ink); border-color: var(--accent); }
+.btn-icon.btn-delete:hover { background: var(--danger); color: #fff;              border-color: var(--danger); }
+
+/* ── Search input (archive) ────────────────────── */
+#search {
+    width: 100%;
+    padding: 0.6rem 0.875rem;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    color: var(--text);
+    font-family: inherit;
+    font-size: 0.9rem;
+    outline: none;
+    margin-bottom: 1.25rem;
+    transition: border-color var(--t-fast), box-shadow var(--t-fast);
+}
+
+#search:focus { border-color: var(--accent); box-shadow: var(--ring); }
+#search::placeholder { color: var(--text-muted); }
+
+/* ── Add task form ─────────────────────────────── */
+.form-group { margin-bottom: 1.25rem; }
+
+.form-group label {
+    display: block;
+    font-size: 0.75rem;
+    font-weight: 600;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    margin-bottom: 0.4rem;
+}
+
+.form-group input,
+.form-group textarea,
+.form-group select {
+    width: 100%;
+    padding: 0.625rem 0.875rem;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    color: var(--text);
+    font-family: inherit;
+    font-size: 0.95rem;
+    outline: none;
+    transition: border-color var(--t-fast), box-shadow var(--t-fast);
+}
+
+.form-group input:focus,
+.form-group textarea:focus,
+.form-group select:focus { border-color: var(--accent); box-shadow: var(--ring); }
+
+.form-group textarea { min-height: 80px; resize: vertical; }
+.form-group input[type="date"]::-webkit-calendar-picker-indicator { filter: invert(0.5); }
+
+.btn-primary {
+    padding: 0.625rem 1.75rem;
+    background: var(--accent);
+    color: var(--accent-ink);
+    border: none;
+    border-radius: var(--radius-pill);
+    font-family: inherit;
+    font-size: 0.95rem;
+    font-weight: 600;
+    cursor: pointer;
+    box-shadow: var(--shadow-sm);
+    transition: opacity var(--t-fast), transform var(--t-fast);
+}
+
+.btn-primary:hover  { opacity: 0.9; }
+.btn-primary:active { transform: translateY(1px); }
+.btn-primary:focus-visible { outline: none; box-shadow: var(--ring); }
+
+/* ── Errors ────────────────────────────────────── */
+.error {
+    color: var(--danger);
+    font-size: 0.875rem;
+    margin-bottom: 0.75rem;
+}
+
+/* ── Site footer ───────────────────────────────── */
+.site-footer {
+    max-width: 800px;
+    margin: 1rem auto 0;
+    padding: 1.75rem 1.5rem 2.5rem;
+    border-top: 1px solid var(--border);
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    gap: 0.5rem 1.5rem;
+    color: var(--text-muted);
+    font-size: 0.85rem;
+}
+
+.footer-tagline { font-weight: 600; color: var(--text); font-size: 0.95rem; }
+.footer-tagline .z { color: var(--danger); }
+
+/* ── Responsive ────────────────────────────────── */
+
+/* Tablet / large phone */
+@media (max-width: 640px) {
+    nav { padding: 0.875rem 1.25rem; flex-wrap: wrap; gap: 0.5rem 0.75rem; }
+    .nav-logo { font-size: 1.3rem; }
+    .nav-links a { padding: 0.35rem 0.7rem; font-size: 0.85rem; }
+
+    main { padding: 1.75rem 1.1rem; }
+    h1 { font-size: 1.6rem; }
+    .page-subtitle { margin-bottom: 1.5rem; }
+
+    /* Due chip drops below the title when the row gets tight */
+    .task-row { flex-wrap: wrap; gap: 0.4rem 0.75rem; }
+    .task-left { flex: 1 1 auto; }
+
+    .quote-banner { padding: 1rem 1rem 1rem 2.4rem; }
+    .quote-banner::before { font-size: 2rem; left: 0.6rem; top: 0.3rem; }
+
+    .filters { gap: 0.5rem 1rem; margin-bottom: 1.25rem; }
+
+    .site-footer { padding: 1.5rem 1.1rem 2rem; }
+}
+
+/* Small phone (≤400px, e.g. 375px target) */
+@media (max-width: 400px) {
+    nav { padding: 0.75rem 1rem; }
+    .nav-links { gap: 0.1rem; }
+    .nav-links a { padding: 0.3rem 0.55rem; font-size: 0.8rem; }
+
+    h1 { font-size: 1.45rem; }
+    main { padding: 1.5rem 0.9rem; }
+
+    .task-card { padding: 0.875rem 1rem; }
+
+    /* Full-width primary action — easier tap target */
+    .btn-primary { width: 100%; }
+}

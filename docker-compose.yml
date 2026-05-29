@@ -1,0 +1,27 @@
+services:
+  web:
+    build: ./web
+    ports:
+      - "8080:80"
+    volumes:
+      - ./web:/var/www
+    depends_on:
+      - db
+    environment:
+      DB_HOST: db
+      DB_NAME: deadlinez
+      DB_USER: deadlinez
+      DB_PASS: deadlinez
+
+  db:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_DB: deadlinez
+      POSTGRES_USER: deadlinez
+      POSTGRES_PASSWORD: deadlinez
+    volumes:
+      - db_data:/var/lib/postgresql/data
+      - ./db/init.sql:/docker-entrypoint-initdb.d/init.sql
+
+volumes:
+  db_data:
